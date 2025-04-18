@@ -1,6 +1,8 @@
 # 학원 통합 관리 시스템
 **Student Attendance & Academy Management System**
+
 **Team 7**
+
 강선후, 김민석, 안태우, 연재혁
 
 ## 📌Index
