@@ -22,7 +22,7 @@ mainform
 using System;
 using System.Windows.Forms;
 
-namespace InsituteManager
+namespace InstituteManager
 {
     public partial class MainForm : Form
     {
