@@ -1,7 +1,7 @@
 /*
 디렉토리 구조
 
-AcademyManager/
+InstituteManager/
 ├── MainForm.cs          
 ├── UserControls/
 │   ├── DashboardControl.cs
@@ -22,7 +22,7 @@ mainform
 using System;
 using System.Windows.Forms;
 
-namespace AcademyManager
+namespace InsituteManager
 {
     public partial class MainForm : Form
     {
