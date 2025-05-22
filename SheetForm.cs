@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using prototype.Models;
 
 
-namespace prototype
+namespace InstituteManagement
 {
     public partial class SheetForm : Form
     {
