@@ -5,137 +5,188 @@ using System.Windows.Forms;
 
 namespace FormNoticeBoardAndCalendar
 {
-    public class FormCalendar : Form
+    public class FormNoticeBoard : Form
     {
-        private TableLayoutPanel calendarTable;
-        private Dictionary<DateTime, FlowLayoutPanel> datePanels = new Dictionary<DateTime, FlowLayoutPanel>();
-        private DateTime currentMonth = DateTime.Today;
+        private Label lblTitle;
+        private ListView lvNotices;
+        private Button btnCreate;
+        private Button btnEdit;
+        private Button btnDetail;
+        private Button btnOpenCalendar;
 
-        public FormCalendar()
+        public FormNoticeBoard()
         {
             InitializeComponent();
-            CreateCalendar(currentMonth);
         }
 
         private void InitializeComponent()
         {
-            this.Text = "📅 캘린더";
+            this.Text = "공지사항 게시판";
             this.ClientSize = new Size(850, 700);
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.BackColor = Color.White;
+            this.BackColor = Color.FromArgb(255, 245, 230);
             this.Font = new Font("Segoe UI", 10);
 
-            calendarTable = new TableLayoutPanel();
-            calendarTable.RowCount = 6;
-            calendarTable.ColumnCount = 7;
-            calendarTable.Dock = DockStyle.Fill;
-            calendarTable.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
+            lblTitle = new Label();
+            lblTitle.Text = "📌 공지사항 게시판";
+            lblTitle.Font = new Font("Segoe UI", 22, FontStyle.Bold);
+            lblTitle.AutoSize = true;
+            lblTitle.Location = new Point(20, 20);
+            this.Controls.Add(lblTitle);
 
-            for (int i = 0; i < 7; i++)
-                calendarTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / 7));
-            for (int i = 0; i < 6; i++)
-                calendarTable.RowStyles.Add(new RowStyle(SizeType.Percent, 100f / 6));
+            lvNotices = new ListView();
+            lvNotices.Location = new Point(20, 70);
+            lvNotices.Size = new Size(800, 400);
+            lvNotices.View = View.Details;
+            lvNotices.FullRowSelect = true;
+            lvNotices.GridLines = true;
+            lvNotices.BorderStyle = BorderStyle.FixedSingle;
+            lvNotices.Columns.Add("제목", 460);
+            lvNotices.Columns.Add("작성자", 160);
+            lvNotices.Columns.Add("작성일", 160);
+            lvNotices.HeaderStyle = ColumnHeaderStyle.Nonclickable;
+            lvNotices.BackColor = Color.FromArgb(240, 240, 240);
+            lvNotices.ForeColor = Color.Black;
+            this.Controls.Add(lvNotices);
 
-            this.Controls.Add(calendarTable);
+            Size btnSize = new Size(160, 40);
+            int btnTop = 490;
+
+            btnCreate = new Button();
+            btnCreate.Text = "📝 공지사항 작성";
+            btnCreate.Size = btnSize;
+            btnCreate.Location = new Point(95, btnTop);
+            StyleButton(btnCreate);
+            btnCreate.Click += BtnCreate_Click;
+            this.Controls.Add(btnCreate);
+
+            btnEdit = new Button();
+            btnEdit.Text = "✏️ 공지사항 수정";
+            btnEdit.Size = btnSize;
+            btnEdit.Location = new Point(345, btnTop);
+            StyleButton(btnEdit);
+            btnEdit.Click += BtnEdit_Click;
+            this.Controls.Add(btnEdit);
+
+            btnDetail = new Button();
+            btnDetail.Text = "🔍 상세 보기";
+            btnDetail.Size = btnSize;
+            btnDetail.Location = new Point(595, btnTop);
+            StyleButton(btnDetail);
+            btnDetail.Click += BtnDetail_Click;
+            this.Controls.Add(btnDetail);
+
+            btnOpenCalendar = new Button();
+            btnOpenCalendar.Text = "📅 캘린더 보기";
+            btnOpenCalendar.Size = new Size(160, 40);
+            btnOpenCalendar.Location = new Point(345, 550);
+            StyleButton(btnOpenCalendar);
+            btnOpenCalendar.Click += BtnOpenCalendar_Click;
+            this.Controls.Add(btnOpenCalendar);
         }
 
-        private void CreateCalendar(DateTime month)
+        private void StyleButton(Button btn)
         {
-            calendarTable.Controls.Clear();
-            datePanels.Clear();
-
-            DateTime firstDay = new DateTime(month.Year, month.Month, 1);
-            int startDayOfWeek = (int)firstDay.DayOfWeek;
-            int daysInMonth = DateTime.DaysInMonth(month.Year, month.Month);
-
-            int dayCounter = 1;
-            for (int row = 0; row < 6; row++)
-            {
-                for (int col = 0; col < 7; col++)
-                {
-                    Panel dayPanel = new Panel();
-                    dayPanel.Dock = DockStyle.Fill;
-                    dayPanel.BorderStyle = BorderStyle.FixedSingle;
-
-                    if (row == 0 && col < startDayOfWeek)
-                    {
-                        calendarTable.Controls.Add(dayPanel, col, row);
-                        continue;
-                    }
-
-                    if (dayCounter > daysInMonth)
-                    {
-                        calendarTable.Controls.Add(dayPanel, col, row);
-                        continue;
-                    }
-
-                    DateTime currentDate = new DateTime(month.Year, month.Month, dayCounter);
-
-                    Label dayLabel = new Label();
-                    dayLabel.Text = dayCounter.ToString();
-                    dayLabel.Dock = DockStyle.Top;
-                    dayLabel.TextAlign = ContentAlignment.TopRight;
-
-                    // 공지사항 버튼들을 담을 패널
-                    FlowLayoutPanel noticePanel = new FlowLayoutPanel();
-                    noticePanel.Dock = DockStyle.Fill;
-                    noticePanel.FlowDirection = FlowDirection.TopDown;
-                    noticePanel.WrapContents = false;
-                    noticePanel.AutoScroll = true;
-
-                    dayPanel.Controls.Add(noticePanel);
-                    dayPanel.Controls.Add(dayLabel);
-                    calendarTable.Controls.Add(dayPanel, col, row);
-                    datePanels[currentDate] = noticePanel;
-
-                    dayCounter++;
-                }
-            }
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.BackColor = Color.FromArgb(240, 240, 240);
+            btn.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            btn.FlatAppearance.BorderColor = Color.Gray;
+            btn.FlatAppearance.BorderSize = 1;
         }
 
-        public void SetNotices(List<NoticeSimple> notices)
+        private void BtnCreate_Click(object sender, EventArgs e)
         {
-            // 기존 버튼 제거
-            foreach (var flowPanel in datePanels.Values)
+            FormCreateNotice createForm = new FormCreateNotice((title, author, content) =>
             {
-                flowPanel.Controls.Clear();
-            }
+                string date = DateTime.Now.ToString("yyyy-MM-dd");
+                ListViewItem item = new ListViewItem(title);
+                item.SubItems.Add(author);
+                item.SubItems.Add(date);
+                item.Tag = content;
+                lvNotices.Items.Add(item);
+            });
 
-            // 새 공지사항 버튼 추가
-            foreach (var notice in notices)
-            {
-                SetNoticeButton(notice.Date.Date, notice);
-            }
+            createForm.ShowDialog();
         }
 
-        private void SetNoticeButton(DateTime date, NoticeSimple notice)
+        private void BtnEdit_Click(object sender, EventArgs e)
         {
-            if (!datePanels.ContainsKey(date))
+            if (lvNotices.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("수정할 공지사항을 선택하세요.", "알림", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
+            }
 
-            var flowPanel = datePanels[date];
+            var selectedItem = lvNotices.SelectedItems[0];
+            string currentTitle = selectedItem.Text;
+            string currentAuthor = selectedItem.SubItems[1].Text;
+            string currentDate = selectedItem.SubItems[2].Text;
+            string currentContent = selectedItem.Tag.ToString();
 
-            Button btn = new Button();
-            btn.Text = notice.Title.Length > 12 ? notice.Title.Substring(0, 12) + "..." : notice.Title;
-            btn.Width = flowPanel.Width - 5;
-            btn.Height = 25;
-            btn.BackColor = Color.LightSkyBlue;
-            btn.ForeColor = Color.Black;
-            btn.Font = new Font("Segoe UI", 8);
-            btn.Margin = new Padding(1);
-
-            btn.Click += (s, e) =>
+            FormEditNotice editForm = new FormEditNotice(
+        currentTitle, currentAuthor, currentContent,
+        (newTitle, newAuthor, newContent) =>
+        {
+            // 제목 앞에 연필 아이콘 없으면 붙임
+            if (!selectedItem.Text.StartsWith("✏️ "))
             {
-                FormDetailNotice detailForm = new FormDetailNotice(
-                    notice.Title,
-                    notice.Author,
-                    date.ToString("yyyy-MM-dd"),
-                    notice.Content
-                );
-                detailForm.ShowDialog();
-            };
+                selectedItem.Text = "✏️ " + newTitle;
+            }
+            else
+            {
+                selectedItem.Text = newTitle;
+            }
+            selectedItem.SubItems[1].Text = newAuthor;
+            selectedItem.SubItems[2].Text = currentDate;
+            selectedItem.Tag = newContent;
+            lvNotices.Invalidate();
+        },
+        (titleToDelete) =>
+        {
+            // 삭제 콜백: 선택된 항목 지우기
+            if (selectedItem.Text == titleToDelete || selectedItem.Text == "✏️ " + titleToDelete)
+            {
+                lvNotices.Items.Remove(selectedItem);
+            }
+        });
 
-            flowPanel.Controls.Add(btn);
+            editForm.ShowDialog();
+        }
+
+        private void BtnDetail_Click(object sender, EventArgs e)
+        {
+            if (lvNotices.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("상세보기를 할 공지사항을 선택하세요.", "알림", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var selectedItem = lvNotices.SelectedItems[0];
+            string title = selectedItem.Text;
+            string author = selectedItem.SubItems[1].Text;
+            string date = selectedItem.SubItems[2].Text;
+            string content = selectedItem.Tag.ToString();
+
+            FormDetailNotice detailForm = new FormDetailNotice(title, author, date, content);
+            detailForm.ShowDialog();
+        }
+
+        private void BtnOpenCalendar_Click(object sender, EventArgs e)
+        {
+            List<NoticeSimple> noticeList = new List<NoticeSimple>();
+            foreach (ListViewItem item in lvNotices.Items)
+            {
+                string title = item.Text;
+                string author = item.SubItems[1].Text;
+                DateTime date = DateTime.Parse(item.SubItems[2].Text);
+                string content = item.Tag.ToString();
+
+                noticeList.Add(new NoticeSimple(date, title, author, content));
+            }
+
+            FormCalendar calendarForm = new FormCalendar();
+            calendarForm.SetNotices(noticeList);
+            calendarForm.ShowDialog();
         }
     }
 }
