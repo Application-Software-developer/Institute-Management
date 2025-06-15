@@ -1,168 +1,141 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace calendar
-
+namespace FormNoticeBoardAndCalendar
 {
-    public partial class FormCalendar : Form
+    public class FormCalendar : Form
     {
-        private Label lblYearMonth;
-        private Button btnPrevMonth;
-        private Button btnNextMonth;
-        private Panel panelCalendarGrid;
-
-        private readonly string[] weekDays = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
-        private const int CellWidth = 50;
-        private const int CellHeight = 40;
-
-        private int displayYear = 2025;
-        private int displayMonth = 5;
-
-        // 날짜 셀 버튼 배열
-        private Button[] dayCells = new Button[42];
+        private TableLayoutPanel calendarTable;
+        private Dictionary<DateTime, FlowLayoutPanel> datePanels = new Dictionary<DateTime, FlowLayoutPanel>();
+        private DateTime currentMonth = DateTime.Today;
 
         public FormCalendar()
         {
             InitializeComponent();
-            InitializeCalendarStructure();
-            ShowCalendar(displayYear, displayMonth);
+            CreateCalendar(currentMonth);
         }
 
         private void InitializeComponent()
         {
-            this.SuspendLayout();
+            this.Text = "📅 캘린더";
+            this.ClientSize = new Size(850, 700);
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.BackColor = Color.White;
+            this.Font = new Font("Segoe UI", 10);
 
-            this.ClientSize = new Size(400, 400);
-            this.Name = "FormCalendar";
-            this.Text = "Calendar";
+            calendarTable = new TableLayoutPanel();
+            calendarTable.RowCount = 6;
+            calendarTable.ColumnCount = 7;
+            calendarTable.Dock = DockStyle.Fill;
+            calendarTable.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
 
-            this.ResumeLayout(false);
-        }
-
-        private void InitializeCalendarStructure()
-        {
-            // 년/월 라벨
-            lblYearMonth = new Label()
-            {
-                Text = $"{displayYear} / {displayMonth:D2}",
-                Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                TextAlign = ContentAlignment.MiddleCenter,
-                Dock = DockStyle.Top,
-                Height = 30
-            };
-            this.Controls.Add(lblYearMonth);
-
-            // 이전 달 버튼
-            btnPrevMonth = new Button()
-            {
-                Text = "<",
-                Size = new Size(40, 30),
-                Location = new Point(10, 30)
-            };
-            btnPrevMonth.Click += BtnPrevMonth_Click;
-            this.Controls.Add(btnPrevMonth);
-
-            // 다음 달 버튼
-            btnNextMonth = new Button()
-            {
-                Text = ">",
-                Size = new Size(40, 30),
-                Location = new Point(this.ClientSize.Width - 50, 30)
-            };
-            btnNextMonth.Click += BtnNextMonth_Click;
-            this.Controls.Add(btnNextMonth);
-
-            // 달력 그리드 패널 (요일 + 날짜 셀 포함)
-            panelCalendarGrid = new Panel()
-            {
-                Location = new Point(10, 70),
-                Size = new Size(CellWidth * 7, CellHeight * 7),
-                BorderStyle = BorderStyle.FixedSingle
-            };
-            this.Controls.Add(panelCalendarGrid);
-
-            // 요일 헤더 그리기 (일~토)
             for (int i = 0; i < 7; i++)
-            {
-                Label lblDay = new Label()
-                {
-                    Text = weekDays[i],
-                    Size = new Size(CellWidth, CellHeight),
-                    Location = new Point(i * CellWidth, 0),
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Font = new Font("Segoe UI", 9, FontStyle.Bold),
-                    BackColor = Color.LightGray
-                };
-                panelCalendarGrid.Controls.Add(lblDay);
-            }
+                calendarTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / 7));
+            for (int i = 0; i < 6; i++)
+                calendarTable.RowStyles.Add(new RowStyle(SizeType.Percent, 100f / 6));
 
-            // 날짜 셀 버튼 생성 및 저장
-            for (int i = 0; i < 42; i++)
-            {
-                Button dayCell = new Button()
-                {
-                    Size = new Size(CellWidth, CellHeight),
-                    Location = new Point((i % 7) * CellWidth, (i / 7 + 1) * CellHeight),
-                    Text = "",
-                    Enabled = false
-                };
-                dayCells[i] = dayCell;
-                panelCalendarGrid.Controls.Add(dayCell);
-            }
+            this.Controls.Add(calendarTable);
         }
 
-        // 달력 보여주기
-        private void ShowCalendar(int year, int month)
+        private void CreateCalendar(DateTime month)
         {
-            lblYearMonth.Text = $"{year} / {month:D2}";
+            calendarTable.Controls.Clear();
+            datePanels.Clear();
 
-            DateTime firstDay = new DateTime(year, month, 1);
-            int daysInMonth = DateTime.DaysInMonth(year, month);
-
-            // 0: 일요일 ... 6: 토요일
+            DateTime firstDay = new DateTime(month.Year, month.Month, 1);
             int startDayOfWeek = (int)firstDay.DayOfWeek;
+            int daysInMonth = DateTime.DaysInMonth(month.Year, month.Month);
 
-            // 날짜 셀 초기화
-            for (int i = 0; i < 42; i++)
+            int dayCounter = 1;
+            for (int row = 0; row < 6; row++)
             {
-                dayCells[i].Text = "";
-                dayCells[i].Enabled = false;
-                dayCells[i].BackColor = SystemColors.Control;
-            }
+                for (int col = 0; col < 7; col++)
+                {
+                    Panel dayPanel = new Panel();
+                    dayPanel.Dock = DockStyle.Fill;
+                    dayPanel.BorderStyle = BorderStyle.FixedSingle;
 
-            // 날짜 배치
-            for (int day = 1; day <= daysInMonth; day++)
-            {
-                int cellIndex = startDayOfWeek + day - 1;
-                dayCells[cellIndex].Text = day.ToString();
-                dayCells[cellIndex].Enabled = true;
-                dayCells[cellIndex].BackColor = Color.White;
+                    if (row == 0 && col < startDayOfWeek)
+                    {
+                        calendarTable.Controls.Add(dayPanel, col, row);
+                        continue;
+                    }
+
+                    if (dayCounter > daysInMonth)
+                    {
+                        calendarTable.Controls.Add(dayPanel, col, row);
+                        continue;
+                    }
+
+                    DateTime currentDate = new DateTime(month.Year, month.Month, dayCounter);
+
+                    Label dayLabel = new Label();
+                    dayLabel.Text = dayCounter.ToString();
+                    dayLabel.Dock = DockStyle.Top;
+                    dayLabel.TextAlign = ContentAlignment.TopRight;
+
+                    // 공지사항 버튼들을 담을 패널
+                    FlowLayoutPanel noticePanel = new FlowLayoutPanel();
+                    noticePanel.Dock = DockStyle.Fill;
+                    noticePanel.FlowDirection = FlowDirection.TopDown;
+                    noticePanel.WrapContents = false;
+                    noticePanel.AutoScroll = true;
+
+                    dayPanel.Controls.Add(noticePanel);
+                    dayPanel.Controls.Add(dayLabel);
+                    calendarTable.Controls.Add(dayPanel, col, row);
+                    datePanels[currentDate] = noticePanel;
+
+                    dayCounter++;
+                }
             }
         }
 
-        private void BtnPrevMonth_Click(object sender, EventArgs e)
+        public void SetNotices(List<NoticeSimple> notices)
         {
-            // 월 감소 (1월 -> 12월 전환)
-            displayMonth--;
-            if (displayMonth < 1)
+            // 기존 버튼 제거
+            foreach (var flowPanel in datePanels.Values)
             {
-                displayMonth = 12;
-                displayYear--;
+                flowPanel.Controls.Clear();
             }
-            ShowCalendar(displayYear, displayMonth);
+
+            // 새 공지사항 버튼 추가
+            foreach (var notice in notices)
+            {
+                SetNoticeButton(notice.Date.Date, notice);
+            }
         }
 
-        private void BtnNextMonth_Click(object sender, EventArgs e)
+        private void SetNoticeButton(DateTime date, NoticeSimple notice)
         {
-            // 월 증가 (12월 -> 1월 전환)
-            displayMonth++;
-            if (displayMonth > 12)
+            if (!datePanels.ContainsKey(date))
+                return;
+
+            var flowPanel = datePanels[date];
+
+            Button btn = new Button();
+            btn.Text = notice.Title.Length > 12 ? notice.Title.Substring(0, 12) + "..." : notice.Title;
+            btn.Width = flowPanel.Width - 5;
+            btn.Height = 25;
+            btn.BackColor = Color.LightSkyBlue;
+            btn.ForeColor = Color.Black;
+            btn.Font = new Font("Segoe UI", 8);
+            btn.Margin = new Padding(1);
+
+            btn.Click += (s, e) =>
             {
-                displayMonth = 1;
-                displayYear++;
-            }
-            ShowCalendar(displayYear, displayMonth);
+                FormDetailNotice detailForm = new FormDetailNotice(
+                    notice.Title,
+                    notice.Author,
+                    date.ToString("yyyy-MM-dd"),
+                    notice.Content
+                );
+                detailForm.ShowDialog();
+            };
+
+            flowPanel.Controls.Add(btn);
         }
     }
 }
