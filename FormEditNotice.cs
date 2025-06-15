@@ -6,23 +6,24 @@ namespace FormNoticeBoardAndCalendar
 {
     public class FormEditNotice : Form
     {
-        private Label lblTitle;
-        private Label lblAuthor;
-        private Label lblContent;
         private TextBox txtTitle;
         private TextBox txtAuthor;
         private TextBox txtContent;
         private Button btnSubmit;
-        private Button btnClose;
+        private Button btnDelete;
 
         private readonly Action<string, string, string> onSubmit;
+        private readonly Action<string> onDelete;
 
-        public FormEditNotice(string currentTitle, string currentAuthor, string currentContent, Action<string, string, string> onSubmitCallback)
+        public FormEditNotice(string currentTitle, string currentAuthor, string currentContent,
+                              Action<string, string, string> onSubmitCallback,
+                              Action<string> onDeleteCallback)
         {
-            this.onSubmit = onSubmitCallback;
+            onSubmit = onSubmitCallback;
+            onDelete = onDeleteCallback;
+
             InitializeComponent();
 
-            // 기존 값으로 텍스트 박스 채우기
             txtTitle.Text = currentTitle;
             txtAuthor.Text = currentAuthor;
             txtContent.Text = currentContent;
@@ -36,9 +37,9 @@ namespace FormNoticeBoardAndCalendar
             this.BackColor = Color.White;
             this.Font = new Font("Segoe UI", 10);
 
-            lblTitle = new Label()
+            Label lblTitle = new Label()
             {
-                Text = "제목:",
+                Text = "제목",
                 Location = new Point(30, 30),
                 AutoSize = true
             };
@@ -48,21 +49,21 @@ namespace FormNoticeBoardAndCalendar
                 Width = 350
             };
 
-            lblAuthor = new Label()
+            Label lblAuthor = new Label()
             {
-                Text = "작성자:",
+                Text = "작성자",
                 Location = new Point(30, 80),
                 AutoSize = true
             };
             txtAuthor = new TextBox()
             {
                 Location = new Point(100, 75),
-                Width = 200
+                Width = 350
             };
 
-            lblContent = new Label()
+            Label lblContent = new Label()
             {
-                Text = "내용:",
+                Text = "내용",
                 Location = new Point(30, 130),
                 AutoSize = true
             };
@@ -78,24 +79,26 @@ namespace FormNoticeBoardAndCalendar
             btnSubmit = new Button()
             {
                 Text = "수정 완료",
-                Location = new Point(100, 350),
+                Location = new Point(100, 410),
                 Width = 150,
                 Height = 40,
-                BackColor = Color.LightGreen,
+                BackColor = Color.SteelBlue,
+                ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat
             };
             btnSubmit.Click += BtnSubmit_Click;
 
-            btnClose = new Button()
+            btnDelete = new Button()
             {
-                Text = "닫기",
-                Location = new Point(270, 350),
-                Width = 100,
+                Text = "삭제",
+                Location = new Point(300, 410),
+                Width = 150,
                 Height = 40,
-                BackColor = Color.LightGray,
+                BackColor = Color.IndianRed,
+                ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat
             };
-            btnClose.Click += (s, e) => this.Close();
+            btnDelete.Click += BtnDelete_Click;
 
             this.Controls.Add(lblTitle);
             this.Controls.Add(txtTitle);
@@ -104,23 +107,34 @@ namespace FormNoticeBoardAndCalendar
             this.Controls.Add(lblContent);
             this.Controls.Add(txtContent);
             this.Controls.Add(btnSubmit);
-            this.Controls.Add(btnClose);
+            this.Controls.Add(btnDelete);
         }
 
         private void BtnSubmit_Click(object sender, EventArgs e)
         {
-            string title = txtTitle.Text.Trim();
-            string author = txtAuthor.Text.Trim();
-            string content = txtContent.Text.Trim();
+            string newTitle = txtTitle.Text.Trim();
+            string newAuthor = txtAuthor.Text.Trim();
+            string newContent = txtContent.Text.Trim();
 
-            if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(author))
+            if (string.IsNullOrWhiteSpace(newTitle) || string.IsNullOrWhiteSpace(newAuthor))
             {
-                MessageBox.Show("제목과 작성자를 입력해주세요.", "입력 오류", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("제목과 작성자는 반드시 입력해야 합니다.", "오류", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            onSubmit?.Invoke(title, author, content);
+            onSubmit?.Invoke(newTitle, newAuthor, newContent);
             this.Close();
+        }
+
+        private void BtnDelete_Click(object sender, EventArgs e)
+        {
+            var result = MessageBox.Show("정말로 이 공지사항을 삭제하시겠습니까?", "삭제 확인",
+                                         MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (result == DialogResult.Yes)
+            {
+                onDelete?.Invoke(txtTitle.Text.Trim());
+                this.Close();
+            }
         }
     }
 }
