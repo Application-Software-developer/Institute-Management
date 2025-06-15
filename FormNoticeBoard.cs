@@ -1,8 +1,9 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace FormNoticeBoard
+namespace FormNoticeBoardAndCalendar
 {
     public class FormNoticeBoard : Form
     {
@@ -11,6 +12,7 @@ namespace FormNoticeBoard
         private Button btnCreate;
         private Button btnEdit;
         private Button btnDetail;
+        private Button btnOpenCalendar;
 
         public FormNoticeBoard()
         {
@@ -45,7 +47,6 @@ namespace FormNoticeBoard
             lvNotices.HeaderStyle = ColumnHeaderStyle.Nonclickable;
             lvNotices.BackColor = Color.FromArgb(240, 240, 240);
             lvNotices.ForeColor = Color.Black;
-
             this.Controls.Add(lvNotices);
 
             Size btnSize = new Size(160, 40);
@@ -74,6 +75,14 @@ namespace FormNoticeBoard
             StyleButton(btnDetail);
             btnDetail.Click += BtnDetail_Click;
             this.Controls.Add(btnDetail);
+
+            btnOpenCalendar = new Button();
+            btnOpenCalendar.Text = "📅 캘린더 보기";
+            btnOpenCalendar.Size = new Size(160, 40);
+            btnOpenCalendar.Location = new Point(345, 550);
+            StyleButton(btnOpenCalendar);
+            btnOpenCalendar.Click += BtnOpenCalendar_Click;
+            this.Controls.Add(btnOpenCalendar);
         }
 
         private void StyleButton(Button btn)
@@ -93,7 +102,7 @@ namespace FormNoticeBoard
                 ListViewItem item = new ListViewItem(title);
                 item.SubItems.Add(author);
                 item.SubItems.Add(date);
-                item.Tag = content; // 내용을 추가하여 저장
+                item.Tag = content;
                 lvNotices.Items.Add(item);
             });
 
@@ -109,11 +118,10 @@ namespace FormNoticeBoard
             }
 
             var selectedItem = lvNotices.SelectedItems[0];
-
             string currentTitle = selectedItem.Text;
             string currentAuthor = selectedItem.SubItems[1].Text;
             string currentDate = selectedItem.SubItems[2].Text;
-            string currentContent = selectedItem.Tag.ToString(); // 내용 가져오기
+            string currentContent = selectedItem.Tag.ToString();
 
             FormEditNotice editForm = new FormEditNotice(currentTitle, currentAuthor, currentContent, (newTitle, newAuthor, newContent) =>
             {
@@ -136,7 +144,6 @@ namespace FormNoticeBoard
             }
 
             var selectedItem = lvNotices.SelectedItems[0];
-
             string title = selectedItem.Text;
             string author = selectedItem.SubItems[1].Text;
             string date = selectedItem.SubItems[2].Text;
@@ -145,5 +152,27 @@ namespace FormNoticeBoard
             FormDetailNotice detailForm = new FormDetailNotice(title, author, date, content);
             detailForm.ShowDialog();
         }
+
+        private void BtnOpenCalendar_Click(object sender, EventArgs e)
+        {
+            List<NoticeSimple> noticeList = new List<NoticeSimple>();
+            foreach (ListViewItem item in lvNotices.Items)
+            {
+                string title = item.Text;
+                string author = item.SubItems[1].Text;
+                DateTime date = DateTime.Parse(item.SubItems[2].Text);
+                string content = item.Tag.ToString();
+
+                noticeList.Add(new NoticeSimple(date, title, author, content));
+            }
+
+            FormCalendar calendarForm = new FormCalendar();
+            calendarForm.SetNotices(noticeList);
+            calendarForm.ShowDialog();
+        }
+
+
+       
+
     }
 }
