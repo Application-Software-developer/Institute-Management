@@ -1,0 +1,12 @@
+C:\Users\연재혁\Desktop\광운\응용소프트웨어실습\timeScheduler\bin\Debug\timeScheduler.exe.config
+C:\Users\연재혁\Desktop\광운\응용소프트웨어실습\timeScheduler\bin\Debug\timeScheduler.exe
+C:\Users\연재혁\Desktop\광운\응용소프트웨어실습\timeScheduler\bin\Debug\timeScheduler.pdb
+C:\Users\연재혁\Desktop\광운\응용소프트웨어실습\timeScheduler\obj\Debug\timeScheduler.csproj.AssemblyReference.cache
+C:\Users\연재혁\Desktop\광운\응용소프트웨어실습\timeScheduler\obj\Debug\timeScheduler.Form1.resources
+C:\Users\연재혁\Desktop\광운\응용소프트웨어실습\timeScheduler\obj\Debug\timeScheduler.Properties.Resources.resources
+C:\Users\연재혁\Desktop\광운\응용소프트웨어실습\timeScheduler\obj\Debug\timeScheduler.TimeTableForm.resources
+C:\Users\연재혁\Desktop\광운\응용소프트웨어실습\timeScheduler\obj\Debug\timeScheduler.csproj.GenerateResource.cache
+C:\Users\연재혁\Desktop\광운\응용소프트웨어실습\timeScheduler\obj\Debug\timeScheduler.csproj.CoreCompileInputs.cache
+C:\Users\연재혁\Desktop\광운\응용소프트웨어실습\timeScheduler\obj\Debug\timeScheduler.exe
+C:\Users\연재혁\Desktop\광운\응용소프트웨어실습\timeScheduler\obj\Debug\timeScheduler.pdb
+C:\Users\연재혁\Desktop\광운\응용소프트웨어실습\timeScheduler\obj\Debug\timeScheduler.FinalTimeTableForm.resources
