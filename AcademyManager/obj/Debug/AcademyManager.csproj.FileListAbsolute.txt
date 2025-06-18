@@ -1,0 +1,10 @@
+C:\Users\USER\Desktop\KW.Univ\AcademyManager\obj\Debug\AcademyManager.csproj.AssemblyReference.cache
+C:\Users\USER\Desktop\KW.Univ\AcademyManager\obj\Debug\AcademyManager.Properties.Resources.resources
+C:\Users\USER\Desktop\KW.Univ\AcademyManager\obj\Debug\AcademyManager.csproj.GenerateResource.cache
+C:\Users\USER\Desktop\KW.Univ\AcademyManager\obj\Debug\AcademyManager.csproj.CoreCompileInputs.cache
+C:\Users\USER\Desktop\KW.Univ\AcademyManager\bin\Debug\AcademyManager.exe.config
+C:\Users\USER\Desktop\KW.Univ\AcademyManager\bin\Debug\AcademyManager.exe
+C:\Users\USER\Desktop\KW.Univ\AcademyManager\bin\Debug\AcademyManager.pdb
+C:\Users\USER\Desktop\KW.Univ\AcademyManager\obj\Debug\AcademyManager.exe
+C:\Users\USER\Desktop\KW.Univ\AcademyManager\obj\Debug\AcademyManager.pdb
+C:\Users\USER\Desktop\KW.Univ\AcademyManager\obj\Debug\AcademyManager.exe.config
