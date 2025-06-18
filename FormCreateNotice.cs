@@ -9,15 +9,17 @@ namespace FormNoticeBoardAndCalendar
         private Label lblTitle;
         private Label lblAuthor;
         private Label lblContent;
+        private Label lblSchedule;
         private TextBox txtTitle;
         private TextBox txtAuthor;
         private TextBox txtContent;
+        private DateTimePicker datePicker;
         private Button btnSubmit;
         private Button btnClose;
 
-        private readonly Action<string, string, string> onSubmit;
+        private readonly Action<string, string, string,DateTime> onSubmit;
 
-        public FormCreateNotice(Action<string, string, string> onSubmitCallback)
+        public FormCreateNotice(Action<string, string, string, DateTime> onSubmitCallback)
         {
             this.onSubmit = onSubmitCallback;
             InitializeComponent();
@@ -40,40 +42,55 @@ namespace FormNoticeBoardAndCalendar
             txtTitle = new TextBox()
             {
                 Location = new Point(100, 25),
-                Width = 350
+                Width = 350,
+                Height = 30
             };
 
             lblAuthor = new Label()
             {
                 Text = "작성자:",
-                Location = new Point(30, 80),
+                Location = new Point(30, 75),
                 AutoSize = true
             };
             txtAuthor = new TextBox()
             {
-                Location = new Point(100, 75),
-                Width = 200
+                Location = new Point(100, 70),
+                Width = 200,
+                Height=30
             };
 
             lblContent = new Label()
             {
                 Text = "내용:",
-                Location = new Point(30, 130),
+                Location = new Point(30, 120),
                 AutoSize = true
             };
             txtContent = new TextBox()
             {
-                Location = new Point(100, 125),
+                Location = new Point(100, 115),
                 Width = 350,
                 Height = 200,
                 Multiline = true,
                 ScrollBars = ScrollBars.Vertical
             };
+            lblSchedule = new Label()
+            {
+                Text = "일정 날짜:",
+                Location = new Point(30, 330),
+                AutoSize = true
+            };
+            datePicker = new DateTimePicker()
+            {
+                Location = new Point(120, 325),
+                Width = 200,
+                Format = DateTimePickerFormat.Custom,
+                CustomFormat = "yyyy-MM-dd"
+            };
 
             btnSubmit = new Button()
             {
                 Text = "공지사항 올리기",
-                Location = new Point(100, 350),
+                Location = new Point(100, 370),
                 Width = 150,
                 Height = 40,
                 BackColor = Color.LightGreen,
@@ -84,7 +101,7 @@ namespace FormNoticeBoardAndCalendar
             btnClose = new Button()
             {
                 Text = "닫기",
-                Location = new Point(270, 350),
+                Location = new Point(270, 370),
                 Width = 100,
                 Height = 40,
                 BackColor = Color.LightGray,
@@ -98,6 +115,8 @@ namespace FormNoticeBoardAndCalendar
             this.Controls.Add(txtAuthor);
             this.Controls.Add(lblContent);
             this.Controls.Add(txtContent);
+            this.Controls.Add(lblSchedule);
+            this.Controls.Add(datePicker);
             this.Controls.Add(btnSubmit);
             this.Controls.Add(btnClose);
         }
@@ -107,6 +126,7 @@ namespace FormNoticeBoardAndCalendar
             string title = txtTitle.Text.Trim();
             string author = txtAuthor.Text.Trim();
             string content = txtContent.Text.Trim();
+            DateTime scheduleDate = datePicker.Value.Date;
 
             if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(author))
             {
@@ -115,7 +135,7 @@ namespace FormNoticeBoardAndCalendar
             }
 
             // 콜백을 통해 메인폼으로 작성된 내용을 전달
-            onSubmit?.Invoke(title, author, content);
+            onSubmit?.Invoke(title, author, content,scheduleDate);
             this.Close();
         }
     }
