@@ -11,12 +11,15 @@ namespace FormNoticeBoardAndCalendar
         private TextBox txtContent;
         private Button btnSubmit;
         private Button btnDelete;
+        private DateTimePicker dtpScheduleDate;
 
-        private readonly Action<string, string, string> onSubmit;
+
+
+        private readonly Action<string, string, string,DateTime> onSubmit;
         private readonly Action<string> onDelete;
 
-        public FormEditNotice(string currentTitle, string currentAuthor, string currentContent,
-                              Action<string, string, string> onSubmitCallback,
+        public FormEditNotice(string currentTitle, string currentAuthor, string currentContent,DateTime currentScheduledate,
+                              Action<string, string, string,DateTime> onSubmitCallback,
                               Action<string> onDeleteCallback)
         {
             onSubmit = onSubmitCallback;
@@ -27,6 +30,7 @@ namespace FormNoticeBoardAndCalendar
             txtTitle.Text = currentTitle;
             txtAuthor.Text = currentAuthor;
             txtContent.Text = currentContent;
+            dtpScheduleDate.Value = currentScheduledate;
         }
 
         private void InitializeComponent()
@@ -45,7 +49,7 @@ namespace FormNoticeBoardAndCalendar
             };
             txtTitle = new TextBox()
             {
-                Location = new Point(100, 25),
+                Location = new Point(100, 27),
                 Width = 350
             };
 
@@ -57,7 +61,7 @@ namespace FormNoticeBoardAndCalendar
             };
             txtAuthor = new TextBox()
             {
-                Location = new Point(100, 75),
+                Location = new Point(100, 77),
                 Width = 350
             };
 
@@ -69,11 +73,23 @@ namespace FormNoticeBoardAndCalendar
             };
             txtContent = new TextBox()
             {
-                Location = new Point(100, 125),
+                Location = new Point(100, 127),
                 Width = 350,
                 Height = 200,
                 Multiline = true,
                 ScrollBars = ScrollBars.Vertical
+            };
+            Label lblScheduleDate = new Label()
+            {
+                Text = "일정 날짜",
+                Location = new Point(30, 350),
+                AutoSize = true
+            };
+            dtpScheduleDate = new DateTimePicker()
+            {
+                Location = new Point(100, 347),
+                Width = 350,
+                Format = DateTimePickerFormat.Short
             };
 
             btnSubmit = new Button()
@@ -106,6 +122,8 @@ namespace FormNoticeBoardAndCalendar
             this.Controls.Add(txtAuthor);
             this.Controls.Add(lblContent);
             this.Controls.Add(txtContent);
+            this.Controls.Add(lblScheduleDate);
+            this.Controls.Add(dtpScheduleDate);
             this.Controls.Add(btnSubmit);
             this.Controls.Add(btnDelete);
         }
@@ -122,7 +140,7 @@ namespace FormNoticeBoardAndCalendar
                 return;
             }
 
-            onSubmit?.Invoke(newTitle, newAuthor, newContent);
+            onSubmit?.Invoke(newTitle, newAuthor, newContent,dtpScheduleDate.Value.Date);
             this.Close();
         }
 
